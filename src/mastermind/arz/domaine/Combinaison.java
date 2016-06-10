@@ -36,10 +36,19 @@ public final class Combinaison {
 
 	private final ArrayList<PionCouleur> _couleursInCombi;
 
+	private int _hash = -1;
+
+	private byte[] _nbrCouleur;
+
 	public Combinaison() {
 
 		_lesPions = new Pion[NOMBRE_PION];
 		_couleursInCombi = new ArrayList<PionCouleur>(NOMBRE_PION);
+		_nbrCouleur = new byte[Pion.NB_COULEUR_MAX];
+
+		for (int i = 0; i < Pion.NB_COULEUR_MAX; i++) {
+			_nbrCouleur[i] = -1;
+		}
 
 	}
 
@@ -127,16 +136,20 @@ public final class Combinaison {
 
 	public byte getNbrColor(final PionCouleur color) {
 
-		byte res = 0;
+		if (_nbrCouleur[color.ordinal()] == -1) {
 
-		for (int i = 0; i < NOMBRE_PION; i++) {
+			byte res = 0;
 
-			if (getCouleurAt(i).equals(color)) {
-				res++;
+			for (int i = 0; i < NOMBRE_PION; i++) {
+
+				if (getCouleurAt(i).equals(color)) {
+					res++;
+				}
 			}
+			_nbrCouleur[color.ordinal()]=res;
 		}
 
-		return res;
+		return _nbrCouleur[color.ordinal()];
 	}
 
 	public int getNumericValue() {
@@ -148,12 +161,17 @@ public final class Combinaison {
 	@Override
 	public int hashCode() {
 
-		int res = getCouleurAt(0).ordinal();
-		for (int b = 1; b < NOMBRE_PION; b++) {
-			res = res * Pion.NB_COULEUR_MAX + getCouleurAt(b).ordinal();
+		if (_hash == -1) {
+
+			int res = getCouleurAt(0).ordinal();
+			for (int b = 1; b < NOMBRE_PION; b++) {
+				res = res * Pion.NB_COULEUR_MAX + getCouleurAt(b).ordinal();
+			}
+
+			_hash = res;
 		}
 
-		return res;
+		return _hash;
 	}
 
 	public int indexOf(final PionCouleur coul) {

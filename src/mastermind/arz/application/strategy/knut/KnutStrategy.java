@@ -11,22 +11,23 @@ import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 
 import mastermind.arz.application.strategy.MasterMindStrategy;
-import mastermind.arz.application.strategy.knut.bypass.KnutByPass510;
-import mastermind.arz.application.strategy.knut.bypass.KnutByPass56;
-import mastermind.arz.application.strategy.knut.bypass.KnutByPass58;
+import mastermind.arz.application.strategy.knut.bypass.KnutByPass;
 import mastermind.arz.application.utils.MastermindUtils;
 import mastermind.arz.common.PionCouleur;
 import mastermind.arz.domaine.Combinaison;
-import mastermind.arz.domaine.Pion;
 import mastermind.arz.domaine.ResultatEssai;
 
 public class KnutStrategy implements MasterMindStrategy {
 
 	private ResultatEssai _firstRes;
 
+	private KnutByPass _bypass;
+
 	private final int NB_THREAD = 3;
 
 	public KnutStrategy() {
+
+		_bypass = new KnutByPass();
 
 	}
 
@@ -39,18 +40,10 @@ public class KnutStrategy implements MasterMindStrategy {
 			lastCombi = possibleCombi.get(0);
 		} else {
 
-			// premier essai on by-pass le calcul
-			if (nbrCoup == 0) {
+			// on essaye le bypass
+			lastCombi = _bypass.bypass(nbrCoup,_firstRes);
 
-				lastCombi = byPassFirst();
-			}
-
-			// second essai, on by-pass également le calcul
-			if (nbrCoup == 1) {
-
-				lastCombi = byPassSecond();
-			}
-
+			// le bypass ne marche pas, on fait le calcul
 			if (lastCombi == null) {
 
 				lastCombi = possibleCombi.get(0);
@@ -87,94 +80,22 @@ public class KnutStrategy implements MasterMindStrategy {
 				lastCombi = calls.get(0).getCombinaison();
 
 			}
+			
+			//on sauve le résultat dans le bypass
+			_bypass.storeCombinaison(nbrCoup,_firstRes,lastCombi);
+			
 
 		}
 
 		return lastCombi;
 	}
 
-	private Combinaison byPassSecond() {
-
-		Combinaison res = null;
-		if (Combinaison.NOMBRE_PION == 4) {
-			if (Pion.NB_COULEUR_MAX == 6) {
-
-			}
-			if (Pion.NB_COULEUR_MAX == 8) {
-
-			}
-			if (Pion.NB_COULEUR_MAX == 10) {
-
-			}
-		}
-
-		if (Combinaison.NOMBRE_PION == 5) {
-			if (Pion.NB_COULEUR_MAX == 6) {
-
-			}
-			if (Pion.NB_COULEUR_MAX == 8) {
-
-				res = KnutByPass58.byPassSecond(_firstRes);
-
-			}
-			if (Pion.NB_COULEUR_MAX == 10) {
-
-				res = KnutByPass510.byPassSecond(_firstRes);
-
-			}
-
-		}
-
-		return res;
-
-	}
-
-	private Combinaison byPassFirst() {
-
-		Combinaison res = null;
-		if (Combinaison.NOMBRE_PION == 4) {
-			if (Pion.NB_COULEUR_MAX == 6) {
-				res = MastermindUtils.getInstance().generateCombi(
-						new PionCouleur[] { PionCouleur.BLANC, PionCouleur.BLANC, PionCouleur.JAUNE, PionCouleur.JAUNE });
-			}
-			if (Pion.NB_COULEUR_MAX == 8) {
-				res = MastermindUtils.getInstance().generateCombi(
-						new PionCouleur[] { PionCouleur.BLANC, PionCouleur.JAUNE, PionCouleur.ORANGE, PionCouleur.ROUGE });
-			}
-			if (Pion.NB_COULEUR_MAX == 10) {
-				res = MastermindUtils.getInstance().generateCombi(
-						new PionCouleur[] { PionCouleur.BLANC, PionCouleur.JAUNE, PionCouleur.ORANGE, PionCouleur.ROUGE });
-			}
-		}
-
-		if (Combinaison.NOMBRE_PION == 5) {
-			if (Pion.NB_COULEUR_MAX == 6) {
-				res = KnutByPass56.byPassFirst();
-			}
-
-			if (Pion.NB_COULEUR_MAX == 8) {
-
-				res = KnutByPass58.byPassFirst();
-
-			}
-
-			if (Pion.NB_COULEUR_MAX == 10) {
-
-				res = KnutByPass510.byPassFirst();
-
-			}
-
-		}
-
-		return res;
-	}
+	
 
 	@Override
 	public void setPreviousResult(ResultatEssai resultat, int nbrCoup) {
 
-		if (nbrCoup == 0) {
-			_firstRes = resultat;
-		}
+		_firstRes = resultat;
 
 	}
 

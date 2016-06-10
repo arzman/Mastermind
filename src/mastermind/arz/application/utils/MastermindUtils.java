@@ -108,13 +108,24 @@ public class MastermindUtils {
 
 		if (_cacheLoaded) {
 			if (combiRef.hashCode() > combiEssai.hashCode()) {
-				res = _cache[combiRef.hashCode()][combiEssai.hashCode()];
+
+				if (combiRef.hashCode() < _cache.length && _cache[combiRef.hashCode()] != null && combiEssai.hashCode() < _cache[combiRef.hashCode()].length) {
+
+					res = _cache[combiRef.hashCode()][combiEssai.hashCode()];
+				}
 			} else {
-				res = _cache[combiEssai.hashCode()][combiRef.hashCode()];
+
+				if (combiEssai.hashCode() < _cache.length && _cache[combiEssai.hashCode()] != null && combiRef.hashCode() < _cache[combiEssai.hashCode()].length) {
+
+					res = _cache[combiEssai.hashCode()][combiRef.hashCode()];
+				}
+
 			}
 		}
 
-		if (res == null) {
+		if (res == null)
+
+		{
 
 			byte nbreBienPlace = 0;
 			byte nbreMalPlace = 0;
@@ -141,7 +152,9 @@ public class MastermindUtils {
 		}
 
 		boolean finish = false;
-		for (int i = 0; i < _allResult.length && !finish; i++) {
+		for (int i = 0; i < _allResult.length && !finish; i++)
+
+		{
 			if (_allResult[i].equals(res)) {
 				finish = true;
 				res.setIndex((byte) _allResult[i].getIndex());
@@ -149,6 +162,7 @@ public class MastermindUtils {
 		}
 
 		return res;
+
 	}
 
 	public final void loadCache(Combinaison[] possibleCombi) {
@@ -175,7 +189,8 @@ public class MastermindUtils {
 			}
 
 			final CacheLoaderCallable call1 = new CacheLoaderCallable(possibleCombi, possibleCombi, _cache, 0, possibleCombi.length / 3);
-			final CacheLoaderCallable call2 = new CacheLoaderCallable(possibleCombi, possibleCombi, _cache, possibleCombi.length / 3, 2 * possibleCombi.length / 3);
+			final CacheLoaderCallable call2 = new CacheLoaderCallable(possibleCombi, possibleCombi, _cache, possibleCombi.length / 3,
+					2 * possibleCombi.length / 3);
 			final CacheLoaderCallable call3 = new CacheLoaderCallable(possibleCombi, possibleCombi, _cache, 2 * possibleCombi.length / 3, possibleCombi.length);
 
 			final ArrayList<CacheLoaderCallable> calls = new ArrayList<CacheLoaderCallable>();
